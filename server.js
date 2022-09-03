@@ -8,7 +8,7 @@ const port = 8000;
 app.use(express.json());
 
 app.get("/", (req, res) => {
-    res.send("<h1>Deutschify backend</h1>")
+    res.send("<h1>Deutschify Backend</h1>")
 })
 
 app.listen(port, () => {
