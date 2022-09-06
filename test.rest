@@ -1,0 +1,27 @@
+@url = http://localhost:8000
+ 
+### base route
+{{url}}/login
+
+### LOGIN HENDRICK
+POST {{url}}/login
+content-type: application/json
+ 
+{
+    "email": "hd@gmail.com"
+}
+ 
+### LOGIN ANDREA
+POST {{url}}/login
+content-type: application/json
+ 
+{
+    "email": "an@gmail.com",
+    "password": "Andrea"
+}
+
+### GET CURRENT USER
+{{url}}/current-user
+
+### LOGOUT GET
+{{url}}/logout
