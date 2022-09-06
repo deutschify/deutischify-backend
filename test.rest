@@ -1,7 +1,7 @@
 @url = http://localhost:8000
  
 ### base route
-{{url}}/login
+{{url}}/rate-us
 
 ### LOGIN HENDRICK
 POST {{url}}/login
