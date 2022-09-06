@@ -17,7 +17,7 @@ content-type: application/json
  
 {
     "email": "an@gmail.com",
-    "password": "Andrea1"
+    "password": "Andrea"
 }
 
 ### GET CURRENT USER
