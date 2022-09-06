@@ -112,7 +112,7 @@ app.get("/", (req: express.Request, res:express.Response) => {
 })
 
 app.get("/user", (req: express.Request, res:express.Response) => {
-    res.send(user)
+    res.send(users)
 })
 
 interface IUser {
@@ -121,13 +121,7 @@ interface IUser {
     accessGroups: string[];
 }
  
-const user: IUser = {
-    firstName: "Hendrick",
-    lastName: "Denzmann",
-    accessGroups: ['loggedInUsers', 'members']
-};
  
-console.log(user);
 
 app.listen(PORT, () => {
     console.log(`Listening on port http://localhost:${PORT}`);
