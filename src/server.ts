@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+
 import session from "express-session";
 import cookieParser from "cookie-parser";
 
@@ -10,11 +11,17 @@ const users = getUsers();
 dotenv.config();
 
 
+
+
+dotenv.config();
+
+
 const app = express();
 app.use(cors());
 const PORT = process.env.PORT || 8000;
 
 app.use(express.json());
+
 
 declare module 'express-session' {
     export interface SessionData {
@@ -99,3 +106,30 @@ app.get('/logout', (req: express.Request, res: express.Response) => {
 app.listen(PORT, () => {
     console.log(`Listening on port http://localhost:${PORT}`);
 });
+
+app.get("/", (req: express.Request, res:express.Response) => {
+    res.send("<h1>Deutschify Backend</h1>")
+})
+
+app.get("/user", (req: express.Request, res:express.Response) => {
+    res.send(user)
+})
+
+interface IUser {
+    firstName: string;
+    lastName: string;
+    accessGroups: string[];
+}
+ 
+const user: IUser = {
+    firstName: "Hendrick",
+    lastName: "Denzmann",
+    accessGroups: ['loggedInUsers', 'members']
+};
+ 
+console.log(user);
+
+app.listen(PORT, () => {
+    console.log(`Listening on port http://localhost:${PORT}`);
+})
+
