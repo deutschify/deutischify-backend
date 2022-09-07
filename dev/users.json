@@ -1,0 +1,17 @@
+[
+    {
+        "email": "hendrick@gmail.com",
+        "password": "$2b$10$KdtgKzA0G8j6IqClOFyoTevEbgXy97gWeK/p0IfGXJeR7tpDLFpvC",
+        "accessGroups": ["loggedInUsers", "members"]
+    },
+    {
+        "email": "anonymousUser",
+        "password": "$2b$10$mP836LcWDFzGZ5RUXgXgtuTNm4Wym9mF.uljAmpSvhWzLiuP1mZR6",
+        "accessGroups": ["loggedOutUsers"]
+    },
+    {
+        "email": "andrea@gmail.com",
+        "password": "$2b$10$XDSYPgCOVR3va2ZcSFYMwe0Scb7Q42gEdOnddQV/NHfkp5mzD8haO",
+        "accessGroups": ["loggedInUsers", "members"]
+    }
+]

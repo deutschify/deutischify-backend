@@ -8,7 +8,8 @@
     "dev": "nodemon",
     "build": "tsc",
     "postinstall": "npm run build",
-    "start": "node build/server.js"
+    "start": "node build/server.js",
+    "genhash": "node dev/generateUserHashes.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/cookie-parser": "^1.4.3",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",

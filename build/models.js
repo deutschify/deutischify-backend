@@ -1,6 +1,4 @@
-import { IUser } from "./interfaces.js";
-
-export const getUsers = (): IUser[] => {
+export const getUsers = () => {
     return [
         {
             email: "hendrick@gmail.com",
