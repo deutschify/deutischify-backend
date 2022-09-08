@@ -2,19 +2,24 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { createTransport } from "nodemailer";
 
+
 import session from "express-session";
 import cookieParser from "cookie-parser";
 
+
 import { User } from "./models/User.js";
+
 // const users = getUsers();
 
 dotenv.config();
 
 mongoose.connect(process.env.MONGODB_URI);
+
 const app = express();
 
 const PORT = process.env.PORT || 8000;
@@ -102,16 +107,17 @@ app.get("/", (req: express.Request, res: express.Response) => {
 app.get("/users", async (req: express.Request, res: express.Response) => {
     const users = await User.find({});
     res.send(users);
+
 });
 
 // functions for loging in and out
 const loginSecondsMax = 10;
 
-const logAnonymousUserIn = async (
-    req: express.Request,
-    res: express.Response
-) => {
-    const user = await User.findOne({ email: "anonymousUser" });
+ 
+const logAnonymousUserIn = async (req: express.Request, res: express.Response) => {
+
+    const user = await User.findOne({email: 'anonymousUser'})
+
     // const user = users.find((user) => user.email === 'anonymousUser');
     if (user) {
         req.session.user = user;
@@ -134,6 +140,9 @@ const logUserIn = async (
     res: express.Response
 ) => {
     const user = await User.findOne({ email });
+
+
+    // const user = await User.findOne({ email, password });
 
     if (user) {
         const passwordIsCorrect = await bcrypt.compare(password, user.password);
