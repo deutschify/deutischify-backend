@@ -48,6 +48,7 @@ const transporter = createTransport({
     secure: true,
     service: "gmail",
     auth: {
+        type: "login",
         user: process.env.MAILER_ACCOUNT_NAME,
         pass: process.env.MAILER_ACCOUNT_PASSWORD,
     },

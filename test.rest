@@ -27,7 +27,7 @@ content-type: application/json
 {
     "firstName": "Mezekir",
     "lastName": "Abraham",
-    "email": "dimo@gmail.com",
+    "email": "dimoabr@gmail.com",
     "password": "an123",
     "language": "English",
     "nationality": "Eritrean"
