@@ -16,8 +16,21 @@ POST {{url}}/login
 content-type: application/json
  
 {
-    "email": "an@gmail.com",
-    "password": "Andrea"
+    "email": "andrea@gmail.com",
+    "password": "an123"
+}
+
+### register me
+POST {{url}}/register
+content-type: application/json
+ 
+{
+    "firstName": "Mezekir",
+    "lastName": "Abraham",
+    "email": "dimoabr@gmail.com",
+    "password": "an123",
+    "language": "English",
+    "nationality": "Eritrean"
 }
 
 ### GET CURRENT USER
