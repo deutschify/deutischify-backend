@@ -11,7 +11,7 @@
     },
     {
         "email": "andrea@gmail.com",
-        "password": "$2b$10$XDSYPgCOVR3va2ZcSFYMwe0Scb7Q42gEdOnddQV/NHfkp5mzD8haO",
+        "password": "$2b$10$JoHf9Cb9tfuPB32xKnKBduZmYModk2EkXpZxk214gt3U0idnmYeVa",
         "accessGroups": ["loggedInUsers", "members"]
     }
 ]
