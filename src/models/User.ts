@@ -8,8 +8,9 @@ const userSchema = new mongoose.Schema({
     email: String,
     password: String,
     feedback: String,
-    languages: String,
+    language: String,
     nationality: String,
+    confirmationCode: String,
     accessGroups: [String]
 })
 

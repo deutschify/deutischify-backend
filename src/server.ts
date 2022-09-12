@@ -85,7 +85,9 @@ const ensureSafeOrigin = (
 ) => {
     try {
         const safeOriginCode = req.body?.safeOriginCode;
+        
         if (safeOriginCode !== process.env.SAFE_ORIGIN_CODE) {
+            console.log({safeOriginCode})
             res.status(500).send("no access");
         } else {
             next();
@@ -95,15 +97,15 @@ const ensureSafeOrigin = (
     }
 };
 
-// app.all('/', function (req, res, next) {
-//     res.header("Access-Control-Allow-Origin", "http://localhost:5173");
-//     res.header("Access-Control-Allow-Headers", "X-Requested-With");
-//     next();
-// });
-
-app.get("/", (req: express.Request, res: express.Response) => {
-    res.send(`***${process.env.NODE_ENV}***`);
+app.all('/', function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    next();
 });
+
+// app.get("/", (req: express.Request, res: express.Response) => {
+//     res.send(`***${process.env.NODE_ENV}***`);
+// });
 
 app.get("/users", async (req: express.Request, res: express.Response) => {
     const users = await User.find({});
@@ -186,29 +188,32 @@ app.post(
     ensureSafeOrigin,
     async (req: express.Request, res: express.Response) => {
         try {
+            
             const firstName = req.body.firstName;
             const lastName = req.body.lastName;
             const email = req.body.email;
-            const password = req.body.password;
-            const language = req.body.language;
             const nationality = req.body.nationality;
             const confirmationCode = getRandomConfirmationCode();
+            const language = req.body.language;
+            const password = req.body.password;
 
             const salt = await bcrypt.genSalt();
             const hash = await bcrypt.hash(password, salt);
+            
+            
 
-            const user = new User({
+            const newUser = new User({
                 firstName,
                 lastName,
-                hash,
+                password:hash,
                 email,
                 language,
                 nationality,
                 confirmationCode,
                 accessGroups: ["loggedInUsers", "unconfirmedMembers"],
-            });
+            });            
 
-            user.save();
+            newUser.save();
 
             // send confirmation email to user
             const confirmUrl = `${process.env.FRONTEND_BASE_URL}/confirm-registration/${confirmationCode}`;
@@ -233,7 +238,7 @@ app.post(
 			res.send({
 				message: 'user created', user: {
 					firstName, lastName, email
-				}
+				} 
 			})
 		
         } catch (e) {
@@ -243,6 +248,7 @@ app.post(
 
 app.get("/current-user", (req: express.Request, res: express.Response) => {
     const user = req.session.user;
+
     if (user) {
         res.send({
             currentUser: user,
@@ -254,6 +260,7 @@ app.get("/current-user", (req: express.Request, res: express.Response) => {
 
 app.post('/confirm-registration-code', async (req: express.Request, res: express.Response) => {
 	const confirmationCode = req.body.confirmationCode;
+    
 	const user = await User.findOne({ confirmationCode });
 	if (user) {
 		user.accessGroups = ['loggedInUsers', 'members'];

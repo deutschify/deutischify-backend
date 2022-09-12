@@ -30,7 +30,9 @@ content-type: application/json
     "email": "dimoabr@gmail.com",
     "password": "an123",
     "language": "English",
-    "nationality": "Eritrean"
+    "nationality": "Eritrean",
+    "safeOriginCode": "12345678",
+    "confimationCode": "12335545646"
 }
 
 ### GET CURRENT USER
