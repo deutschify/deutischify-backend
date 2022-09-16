@@ -228,6 +228,36 @@ app.get("/thueringen", async (req: express.Request, res: express.Response) => {
     res.send(thueringen);
 });
 
+// Omars ding
+
+app.get("/rate-us", async (req: express.Request, res: express.Response) => {
+    // const thueringen = await Thueringen.find({});
+    res.send("<h1> rate us </h1>");
+});
+
+app.post("/rate-us", async (req: express.Request, res: express.Response) => {
+    // const { firstName, lastName, feedback } = req.body;
+    // res.send(req.body);
+    try {
+        let user = req.session.user;
+        if (user) {
+            res.send({
+                currentUser: user,
+            });
+            const firstName = req.body.firstName;
+            const lastName = req.body.lastName;
+            const feedback = req.body.feedback;
+            user = { ...user, firstName, lastName, feedback };
+        } else {
+            logAnonymousUserIn(req, res);
+        }
+
+        console.log(user);
+    } catch (err) {
+        console.log(err);
+    }
+});
+
 // functions for loging in and out
 const loginSecondsMax = 10;
 
@@ -360,17 +390,21 @@ app.post(
     }
 );
 
-app.get("/current-user", (req: express.Request, res: express.Response) => {
-    const user = req.session.user;
+app.get(
+    "/current-user",
+    async (req: express.Request, res: express.Response) => {
+        let user = req.session.user;
 
-    if (user) {
-        res.send({
-            currentUser: user,
-        });
-    } else {
-        logAnonymousUserIn(req, res);
+        if (user) {
+            // user = await User.findOne({ email: user.email });
+            res.send({
+                currentUser: user,
+            });
+        } else {
+            logAnonymousUserIn(req, res);
+        }
     }
-});
+);
 
 app.post(
     "/confirm-registration-code",
