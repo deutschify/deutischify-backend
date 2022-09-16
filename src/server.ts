@@ -228,6 +228,18 @@ app.get("/thueringen", async (req: express.Request, res: express.Response) => {
     res.send(thueringen);
 });
 
+// Omars ding
+
+app.get("/rate-us", async (req: express.Request, res: express.Response) => {
+    // const thueringen = await Thueringen.find({});
+    res.send("<h1> rate us </h1>");
+});
+
+app.post("/rate-us", async (req: express.Request, res: express.Response) => {
+    const { firstName, lastName, feedback } = req.body;
+    res.send(req.body);
+});
+
 // functions for loging in and out
 const loginSecondsMax = 10;
 
