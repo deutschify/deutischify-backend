@@ -12,22 +12,8 @@ import cookieParser from "cookie-parser";
 
 import { User } from "./models/User.js";
 
-import { BadenWuerttemberg } from "./models/States.js";
-import { Bayern } from "./models/States.js";
-import { Berlin } from "./models/States.js";
-import { Brandenburg } from "./models/States.js";
-import { Bremen } from "./models/States.js";
-import { Hamburg } from "./models/States.js";
-import { Hessen } from "./models/States.js";
-import { MecklenburgVorpommern } from "./models/States.js";
-import { Niedersachsen } from "./models/States.js";
-import { NordrheinWestfalen } from "./models/States.js";
-import { RheinlandPfalz } from "./models/States.js";
-import { Saarland } from "./models/States.js";
-import { Sachsen } from "./models/States.js";
-import { SachsenAnhalt } from "./models/States.js";
-import { SchleswigHolstein } from "./models/States.js";
-import { Thueringen } from "./models/States.js";
+import { Deutschland } from "./models/States.js";
+
 
 // const users = getUsers();
 
@@ -128,105 +114,14 @@ app.get("/users", async (req: express.Request, res: express.Response) => {
 });
 
 app.get(
-    "/baden-wuerttemberg",
+    "/questions",
     async (req: express.Request, res: express.Response) => {
-        const badenWuerttemberg = await BadenWuerttemberg.find({});
-        res.send(badenWuerttemberg);
+        const deutschland = await Deutschland.find({});
+        res.send(deutschland);
     }
 );
 
-app.get("/bayern", async (req: express.Request, res: express.Response) => {
-    const bayern = await Bayern.find({});
-    res.send(bayern);
-});
 
-app.get("/berlin", async (req: express.Request, res: express.Response) => {
-    const berlin = await Berlin.find({});
-    res.send(berlin);
-});
-
-app.get("/brandenburg", async (req: express.Request, res: express.Response) => {
-    const brandenburg = await Brandenburg.find({});
-    res.send(brandenburg);
-});
-
-app.get("/bremen", async (req: express.Request, res: express.Response) => {
-    const bremen = await Bremen.find({});
-    res.send(bremen);
-});
-
-app.get("/hamburg", async (req: express.Request, res: express.Response) => {
-    const hamburg = await Hamburg.find({});
-    res.send(hamburg);
-});
-
-app.get("/hessen", async (req: express.Request, res: express.Response) => {
-    const hessen = await Hessen.find({});
-    res.send(hessen);
-});
-
-app.get(
-    "/mecklenburg-vorpommern",
-    async (req: express.Request, res: express.Response) => {
-        const mecklenburgVorpommern = await MecklenburgVorpommern.find({});
-        res.send(mecklenburgVorpommern);
-    }
-);
-
-app.get(
-    "/niedersachsen",
-    async (req: express.Request, res: express.Response) => {
-        const niedersachsen = await Niedersachsen.find({});
-        res.send(niedersachsen);
-    }
-);
-
-app.get(
-    "/nordrhein-westfalen",
-    async (req: express.Request, res: express.Response) => {
-        const nordrheinWestfalen = await NordrheinWestfalen.find({});
-        res.send(nordrheinWestfalen);
-    }
-);
-
-app.get(
-    "/rheinland-pfalz",
-    async (req: express.Request, res: express.Response) => {
-        const rheinlandPfalz = await RheinlandPfalz.find({});
-        res.send(rheinlandPfalz);
-    }
-);
-
-app.get("/saarland", async (req: express.Request, res: express.Response) => {
-    const saarland = await Saarland.find({});
-    res.send(saarland);
-});
-
-app.get("/sachsen", async (req: express.Request, res: express.Response) => {
-    const sachsen = await Sachsen.find({});
-    res.send(sachsen);
-});
-
-app.get(
-    "/sachsen-anhalt",
-    async (req: express.Request, res: express.Response) => {
-        const sachsenAnhalt = await SachsenAnhalt.find({});
-        res.send(sachsenAnhalt);
-    }
-);
-
-app.get(
-    "/schleswig-holstein",
-    async (req: express.Request, res: express.Response) => {
-        const schleswigHolstein = await SchleswigHolstein.find({});
-        res.send(schleswigHolstein);
-    }
-);
-
-app.get("/thueringen", async (req: express.Request, res: express.Response) => {
-    const thueringen = await Thueringen.find({});
-    res.send(thueringen);
-});
 
 // functions for loging in and out
 const loginSecondsMax = 10;
