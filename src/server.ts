@@ -114,7 +114,7 @@ app.get("/users", async (req: express.Request, res: express.Response) => {
 });
 
 app.get(
-    "/questions",
+    "/all-questions",
     async (req: express.Request, res: express.Response) => {
         const deutschland = await Deutschland.find({});
         res.send(deutschland);
