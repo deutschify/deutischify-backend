@@ -17,6 +17,7 @@ content-type: application/json
  
 {
     "email": "andrea@gmail.com",
+    "safeOriginCode": "12345678",
     "password": "an123"
 }
 
@@ -40,3 +41,15 @@ content-type: application/json
 
 ### LOGOUT GET
 {{url}}/logout
+
+
+### RATE USER 
+POST {{url}}/rate-us
+content-type: application/json
+ 
+{
+    "email": "andrea@gmail.com",
+    "feedback": "hi",
+    "firstName":"Andrea",
+    "lastName":"lopez"
+}
