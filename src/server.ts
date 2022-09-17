@@ -114,9 +114,10 @@ app.get("/users", async (req: express.Request, res: express.Response) => {
 });
 
 app.get(
-    "/all-questions",
-    async (req: express.Request, res: express.Response) => {
-        const deutschland = await Deutschland.find({});
+    "/all-questions/:bundesland",
+    async (req: express.Request, res: express.Response, next) => {
+        const { bundesland } = req.params;
+        const deutschland = await Deutschland.find({ bundesland });
         res.send(deutschland);
     }
 );
