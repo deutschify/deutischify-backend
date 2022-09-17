@@ -12,6 +12,7 @@ import cookieParser from "cookie-parser";
 
 import { User } from "./models/User.js";
 
+
 import { Deutschland } from "./models/States.js";
 
 
@@ -255,17 +256,21 @@ app.post(
     }
 );
 
-app.get("/current-user", (req: express.Request, res: express.Response) => {
-    const user = req.session.user;
+app.get(
+    "/current-user",
+    async (req: express.Request, res: express.Response) => {
+        let user = req.session.user;
 
-    if (user) {
-        res.send({
-            currentUser: user,
-        });
-    } else {
-        logAnonymousUserIn(req, res);
+        if (user) {
+            // user = await User.findOne({ email: user.email });
+            res.send({
+                currentUser: user,
+            });
+        } else {
+            logAnonymousUserIn(req, res);
+        }
     }
-});
+);
 
 app.post(
     "/confirm-registration-code",

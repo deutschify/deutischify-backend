@@ -16,4 +16,6 @@ const stateSchema = new mongoose.Schema({
 });
 
 
+
 export const Deutschland = mongoose.model("deutschlandquestion", stateSchema);
+
