@@ -115,12 +115,23 @@ app.get("/users", async (req: express.Request, res: express.Response) => {
 });
 
 app.get(
-    "/questions",
-    async (req: express.Request, res: express.Response) => {
-        const deutschland = await Deutschland.find({});
+    "/all-questions",
+    async (req: express.Request, res: express.Response, next) => {
+        // const { category } = req.params;
+        const deutschland = await Deutschland.find();
         res.send(deutschland);
     }
 );
+
+app.get(
+    "/all-questions/:category",
+    async (req: express.Request, res: express.Response, next) => {
+        const { category } = req.params;
+        const deutschland = await Deutschland.find({ category } );
+       // const deutschland = await Deutschland.find({ $and: [ { category }, { category:"deutschland" } ] })
+        res.send(deutschland);
+    }
+)
 
 
 
