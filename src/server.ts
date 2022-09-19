@@ -127,13 +127,13 @@ app.get(
     "/all-questions/:category",
     async (req: express.Request, res: express.Response, next) => {
         const { category } = req.params;
-        const deutschland = await Deutschland.find({ category } );
+        // const deutschland = await Deutschland.find({ category } );
        // const deutschland = await Deutschland.find({ $and: [ { category }, { category:"deutschland" } ] })
+       const deutschland = await Deutschland.find({category: {$in: ["deutschland", `${category}`]}}).sort({number:1}).collation({locale: "en_US", numericOrdering: true})
         res.send(deutschland);
+        
     }
 )
-
-
 
 // functions for loging in and out
 const loginSecondsMax = 10;
