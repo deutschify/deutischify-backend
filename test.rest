@@ -17,7 +17,8 @@ content-type: application/json
  
 {
     "email": "andrea@gmail.com",
-    "password": "an123"
+    "password": "an123",
+    "safeOriginCode" :"12345678"
 }
 
 ### register me

@@ -70,14 +70,6 @@ const transporter = createTransport({
     tls: { rejectUnauthorized: false },
 });
 
-app.use(
-    session({
-        resave: true,
-        saveUninitialized: true,
-        secret: "tempsecret",
-    })
-);
-
 app.use(cookieParser());
 
 app.use(
@@ -92,6 +84,12 @@ app.use(
         },
     })
 );
+
+app.all("/", function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    next();
+});
 
 const ensureSafeOrigin = (
     req: express.Request,
@@ -112,11 +110,6 @@ const ensureSafeOrigin = (
     }
 };
 
-app.all("/", function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    next();
-});
 
 // app.get("/", (req: express.Request, res: express.Response) => {
 //     res.send(`***${process.env.NODE_ENV}***`);
@@ -237,7 +230,6 @@ const logAnonymousUserIn = async (
 ) => {
     const user = await User.findOne({ email: "anonymousUser" });
 
-    // const user = users.find((user) => user.email === 'anonymousUser');
     if (user) {
         req.session.user = user;
         req.session.cookie.expires = new Date(
@@ -245,7 +237,7 @@ const logAnonymousUserIn = async (
         );
         req.session.save();
         res.send({
-            currentUser: user,
+            'currentUser': user,
         });
     } else {
         res.status(500).send("bad login");
@@ -271,9 +263,10 @@ const logUserIn = async (
             req.session.cookie.expires = new Date(
                 Date.now() + loginSecondsMax * 1000
             );
+
             req.session.save();
             res.send({
-                currentUser: user,
+                'currentUser': user,
             });
         } else {
             logAnonymousUserIn(req, res);
@@ -287,9 +280,12 @@ app.post(
     "/login",
     ensureSafeOrigin,
     (req: express.Request, res: express.Response) => {
-        const email = req.body?.email;
+        try{const email = req.body?.email;
         const password = req.body?.password;
-        logUserIn(email, password, req, res);
+        logUserIn(email, password, req, res);}
+    catch(e) {
+        res.status(500).send("no access")
+    }
     }
 );
 
@@ -322,7 +318,7 @@ app.post(
                 language,
                 nationality,
                 confirmationCode,
-                accessGroups: ["loggedInUsers", "unconfirmedMembers"],
+                accessGroups: ["loggedOutUsers", "unconfirmedMembers"],
             });
 
             newUser.save();
@@ -347,7 +343,7 @@ app.post(
             });
 
             res.send({
-                message: "user created",
+                message: "You are one step closer. we've sent you email inorder to verify yourself.",
                 user: {
                     firstName,
                     lastName,
@@ -360,24 +356,31 @@ app.post(
     }
 );
 
-app.get("/current-user", (req: express.Request, res: express.Response) => {
-    const user = req.session.user;
+app.get(
+    "/current-user",
+    async (req: express.Request, res: express.Response) => {
 
-    if (user) {
-        res.send({
-            currentUser: user,
-        });
-    } else {
-        logAnonymousUserIn(req, res);
+        const user = req.session.user;
+        // console.log(req.session);
+        // console.log(user);
+        
+        if (user) {
+            res.send({
+                'currentUser': user
+            });
+        } else {
+            logAnonymousUserIn(req, res);
+        }
     }
-});
+);
 
 app.post(
     "/confirm-registration-code",
     async (req: express.Request, res: express.Response) => {
         const confirmationCode = req.body.confirmationCode;
 
-        const user = await User.findOne({ confirmationCode });
+        let user = await User.findOne({ confirmationCode });
+        
         if (user) {
             user.accessGroups = ["loggedInUsers", "members"];
             user.save();

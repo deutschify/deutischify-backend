@@ -9,6 +9,7 @@ const stateSchema = new mongoose.Schema({
     answerC: String,
     answerD: String,
     correctAnswer: String,
+    imageUrl: String
 });
 
 export const Berlin = mongoose.model("berlin-question", stateSchema);
