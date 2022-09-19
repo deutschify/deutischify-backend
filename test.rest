@@ -53,3 +53,6 @@ content-type: application/json
     "firstName":"Andrea",
     "lastName":"lopez"
 }
+
+### GET state and Deutchland fragen
+{{url}}/all-questions/bremen
