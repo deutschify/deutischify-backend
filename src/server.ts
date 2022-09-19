@@ -127,7 +127,8 @@ app.get(
     "/all-questions/:category",
     async (req: express.Request, res: express.Response, next) => {
         const { category } = req.params;
-        const deutschland = await Deutschland.find({ category });
+        const deutschland = await Deutschland.find({ category } );
+       // const deutschland = await Deutschland.find({ $and: [ { category }, { category:"deutschland" } ] })
         res.send(deutschland);
     }
 )
