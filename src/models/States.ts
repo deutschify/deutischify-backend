@@ -10,7 +10,7 @@ const stateSchema = new mongoose.Schema({
     answerD: String,
     correctAnswer: String,
     explanation: String,
-    image: Buffer,
+    imageURL: String,
     module: String,
     topic: String,
 });

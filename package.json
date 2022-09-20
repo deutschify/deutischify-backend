@@ -29,6 +29,7 @@
   "dependencies": {
     "@types/dotenv": "^8.2.0",
     "bcrypt": "^5.0.1",
+    "cloudinary": "^1.32.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.2",

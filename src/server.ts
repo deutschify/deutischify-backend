@@ -11,8 +11,6 @@ import session from "express-session";
 import cookieParser from "cookie-parser";
 
 import { User } from "./models/User.js";
-
-
 import { Deutschland } from "./models/States.js";
 
 
