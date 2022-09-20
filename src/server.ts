@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import cloudinary from "cloudinary";
 
 import bcrypt from "bcrypt";
 import crypto from "crypto";
@@ -18,11 +19,18 @@ import { Deutschland } from "./models/States.js";
 
 dotenv.config();
 
-mongoose.connect(process.env.MONGODB_URI);
+mongoose.connect(process.env.MONGODB_URI).then(() => {console.log('mongoDB is connected')}).catch((err) => {console.log(err)});
 
 const app = express();
 
 const PORT = process.env.PORT || 8000;
+
+// in ordder to configure the cloudinary api
+cloudinary.v2.config({
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key:process.env.CLOUDINARY_API_KEY,
+    api_secret:process.env.CLOUDINARY_API_SECRET
+})
 
 app.use(
     cors({
