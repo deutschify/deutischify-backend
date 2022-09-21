@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cloudinary from "cloudinary";
 import helmet from "helmet";
+import morgan from "morgan";
 
 import bcrypt from "bcrypt";
 import crypto from "crypto";
@@ -53,6 +54,8 @@ app.use(express.json());
 
 // Helmet can help us to stay secure
 app.use(helmet());
+//Morgan is a request middleware tool to tell us which request has been made and what was the result in the console
+app.use(morgan("common"));
 
 declare module "express-session" {
     export interface SessionData {
