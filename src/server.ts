@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cloudinary from "cloudinary";
+import helmet from "helmet";
 
 import bcrypt from "bcrypt";
 import crypto from "crypto";
@@ -14,12 +15,18 @@ import cookieParser from "cookie-parser";
 import { User } from "./models/User.js";
 import { Deutschland } from "./models/States.js";
 
-
 // const users = getUsers();
 
 dotenv.config();
 
-mongoose.connect(process.env.MONGODB_URI).then(() => {console.log('mongoDB is connected')}).catch((err) => {console.log(err)});
+mongoose
+    .connect(process.env.MONGODB_URI)
+    .then(() => {
+        console.log("mongoDB is connected");
+    })
+    .catch((err) => {
+        console.log(err);
+    });
 
 const app = express();
 
@@ -28,9 +35,9 @@ const PORT = process.env.PORT || 8000;
 // in ordder to configure the cloudinary api
 cloudinary.v2.config({
     cloud_name: process.env.CLOUDINARY_NAME,
-    api_key:process.env.CLOUDINARY_API_KEY,
-    api_secret:process.env.CLOUDINARY_API_SECRET
-})
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 app.use(
     cors({
@@ -43,6 +50,9 @@ app.use(
 app.set("trust proxy", 1);
 
 app.use(express.json());
+
+// Helmet can help us to stay secure
+app.use(helmet());
 
 declare module "express-session" {
     export interface SessionData {
@@ -134,12 +144,15 @@ app.get(
     async (req: express.Request, res: express.Response, next) => {
         const { category } = req.params;
         // const deutschland = await Deutschland.find({ category } );
-       // const deutschland = await Deutschland.find({ $and: [ { category }, { category:"deutschland" } ] })
-       const deutschland = await Deutschland.find({category: {$in: ["deutschland", `${category}`]}}).sort({number:1}).collation({locale: "en_US", numericOrdering: true})
+        // const deutschland = await Deutschland.find({ $and: [ { category }, { category:"deutschland" } ] })
+        const deutschland = await Deutschland.find({
+            category: { $in: ["deutschland", `${category}`] },
+        })
+            .sort({ number: 1 })
+            .collation({ locale: "en_US", numericOrdering: true });
         res.send(deutschland);
-        
     }
-)
+);
 
 // functions for loging in and out
 const loginSecondsMax = 10;
