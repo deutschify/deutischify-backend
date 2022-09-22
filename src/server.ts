@@ -15,6 +15,7 @@ import cookieParser from "cookie-parser";
 
 import { User } from "./models/User.js";
 import { Deutschland } from "./models/States.js";
+import { Post } from "./models/Post.js";
 
 // const users = getUsers();
 
@@ -408,6 +409,38 @@ app.get("/users/:_id", async (req: express.Request, res: express.Response) => {
         res.status(500).json(err);
     }
 });
+
+//Post Bereich
+
+//Create a Post
+app.post("/posts", async (req: express.Request, res: express.Response) => {
+    const newPost = new Post(req.body);
+    try {
+        const savedPost = await newPost.save();
+        res.status(200).json(savedPost);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+//Update a post
+app.put("/posts/:_id", async (req: express.Request, res: express.Response) => {
+    try {
+        const post = Post.findById(req.params._id);
+        if (req.params._id === req.body.userId) {
+            await post.updateOne({ $set: req.body });
+            res.status(200).json("Post has been updated");
+        } else {
+            res.status(403).json("you can't update the post");
+        }
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+//Like a Post
+//Get a Post
+//Get all Posts
 
 app.get("/logout", (req: express.Request, res: express.Response) => {
     logAnonymousUserIn(req, res);
