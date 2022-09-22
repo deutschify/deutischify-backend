@@ -26,14 +26,14 @@ POST {{url}}/register
 content-type: application/json
  
 {
-    "firstName": "Mezekir",
-    "lastName": "Abraham",
-    "email": "dimoabr@gmail.com",
+    "firstName": "Andrea",
+    "lastName": "lopez",
+    "email": "andrea@gmail.com",
     "password": "an123",
-    "language": "English",
-    "nationality": "Eritrean",
+    "language": "Deutsch",
+    "nationality": "German",
     "safeOriginCode": "12345678",
-    "confimationCode": "12335545646"
+    "confimationCode": ""
 }
 
 ### GET CURRENT USER

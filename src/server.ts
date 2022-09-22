@@ -3,6 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cloudinary from "cloudinary";
+import helmet from "helmet";
+import morgan from "morgan";
 
 import bcrypt from "bcrypt";
 import crypto from "crypto";
@@ -14,12 +16,18 @@ import cookieParser from "cookie-parser";
 import { User } from "./models/User.js";
 import { Deutschland } from "./models/States.js";
 
-
 // const users = getUsers();
 
 dotenv.config();
 
-mongoose.connect(process.env.MONGODB_URI).then(() => {console.log('mongoDB is connected')}).catch((err) => {console.log(err)});
+mongoose
+    .connect(process.env.MONGODB_URI)
+    .then(() => {
+        console.log("mongoDB is connected");
+    })
+    .catch((err) => {
+        console.log(err);
+    });
 
 const app = express();
 
@@ -28,9 +36,9 @@ const PORT = process.env.PORT || 8000;
 // in ordder to configure the cloudinary api
 cloudinary.v2.config({
     cloud_name: process.env.CLOUDINARY_NAME,
-    api_key:process.env.CLOUDINARY_API_KEY,
-    api_secret:process.env.CLOUDINARY_API_SECRET
-})
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 app.use(
     cors({
@@ -43,6 +51,11 @@ app.use(
 app.set("trust proxy", 1);
 
 app.use(express.json());
+
+// Helmet can help us to stay secure
+app.use(helmet());
+//Morgan is a request middleware tool to tell us which request has been made and what was the result in the console
+app.use(morgan("common"));
 
 declare module "express-session" {
     export interface SessionData {
@@ -134,12 +147,15 @@ app.get(
     async (req: express.Request, res: express.Response, next) => {
         const { category } = req.params;
         // const deutschland = await Deutschland.find({ category } );
-       // const deutschland = await Deutschland.find({ $and: [ { category }, { category:"deutschland" } ] })
-       const deutschland = await Deutschland.find({category: {$in: ["deutschland", `${category}`]}}).sort({number:1}).collation({locale: "en_US", numericOrdering: true})
+        // const deutschland = await Deutschland.find({ $and: [ { category }, { category:"deutschland" } ] })
+        const deutschland = await Deutschland.find({
+            category: { $in: ["deutschland", `${category}`] },
+        })
+            .sort({ number: 1 })
+            .collation({ locale: "en_US", numericOrdering: true });
         res.send(deutschland);
-        
     }
-)
+);
 
 // Omars ding
 
@@ -339,6 +355,59 @@ app.post(
         }
     }
 );
+
+//Update User Info
+
+app.put("/users/:_id", async (req: express.Request, res: express.Response) => {
+    if (req.params._id === req.body._id || req.body.isAdmin) {
+        if (req.body.password) {
+            try {
+                const salt = await bcrypt.genSalt();
+                req.body.password = await bcrypt.hash(req.body.password, salt);
+            } catch (err) {
+                return res.status(500).json(err);
+            }
+        }
+        try {
+            const user = await User.findByIdAndUpdate(req.params._id, {
+                $set: req.body,
+            });
+            res.status(200).json("account has been updated");
+        } catch (err) {
+            return res.status(500).json(err);
+        }
+    } else {
+        return res.status(403).json("You can't update yourself");
+    }
+});
+
+//delete a user
+
+app.delete(
+    "/users/:_id",
+    async (req: express.Request, res: express.Response) => {
+        if (req.params._id === req.body._id || req.body.isAdmin) {
+            try {
+                await User.findByIdAndDelete(req.params._id);
+                res.status(200).json("account has been deleted");
+            } catch (err) {
+                return res.status(500).json(err);
+            }
+        } else {
+            return res.status(403).json("You can't delete yourself");
+        }
+    }
+);
+
+//get a User
+app.get("/users/:_id", async (req: express.Request, res: express.Response) => {
+    try {
+        const user = await User.findById(req.params._id);
+        res.status(200).json(user);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
 
 app.get("/logout", (req: express.Request, res: express.Response) => {
     logAnonymousUserIn(req, res);
