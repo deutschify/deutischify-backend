@@ -26,12 +26,12 @@ POST {{url}}/register
 content-type: application/json
  
 {
-    "firstName": "Andrea",
-    "lastName": "lopez",
-    "email": "andrea@gmail.com",
-    "password": "an123",
+    "firstName": "Omar",
+    "lastName": "Tabaa",
+    "email": "omartabaa@gmail.com",
+    "password": "am123",
     "language": "Deutsch",
-    "nationality": "German",
+    "nationality": "Syrian",
     "safeOriginCode": "12345678",
     "confimationCode": ""
 }
