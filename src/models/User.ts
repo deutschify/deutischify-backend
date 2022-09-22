@@ -11,7 +11,8 @@ const userSchema = new mongoose.Schema({
     language: String,
     nationality: String,
     confirmationCode: String,
-    accessGroups: [String]
+    accessGroups: [String],
+    imagePublicId: String,
 })
 
  

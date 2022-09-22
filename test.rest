@@ -39,6 +39,9 @@ content-type: application/json
 ### GET CURRENT USER
 {{url}}/current-user
 
+### GET USER ACCOUNT
+{{url}}/Andrea
+
 ### LOGOUT GET
 {{url}}/logout
 

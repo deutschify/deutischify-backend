@@ -142,7 +142,7 @@ app.get(
 )
 
 // functions for loging in and out
-const loginSecondsMax = 10;
+const loginSecondsMax = 1000;
 
 const logAnonymousUserIn = async (
     req: express.Request,
@@ -158,7 +158,7 @@ const logAnonymousUserIn = async (
         );
         req.session.save();
         res.send({
-            currentUser: user,
+            "currentUser": user,
         });
     } else {
         res.status(500).send("bad login");
@@ -186,7 +186,7 @@ const logUserIn = async (
             );
             req.session.save();
             res.send({
-                currentUser: user,
+                "currentUser": user,
             });
         } else {
             logAnonymousUserIn(req, res);
@@ -281,13 +281,25 @@ app.get(
         if (user) {
             // user = await User.findOne({ email: user.email });
             res.send({
-                currentUser: user,
+                "currentUser": user,
             });
         } else {
             logAnonymousUserIn(req, res);
         }
     }
 );
+
+app.get("/:user", async(req: express.Request, res: express.Response) => {
+    const {user} = req.params;
+    const currentUser = req.session.user
+    if (user === currentUser.firstName) {
+        res.send({
+            "currentUser": currentUser,
+        });
+    }else {
+        logAnonymousUserIn(req, res);
+    }
+})
 
 app.post(
     "/confirm-registration-code",
