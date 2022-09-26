@@ -410,8 +410,7 @@ app.get("/users/:_id", async (req: express.Request, res: express.Response) => {
     }
 });
 
-//Post Bereich
-
+//Post Section
 //Create a Post
 app.post("/posts", async (req: express.Request, res: express.Response) => {
     const newPost = new Post(req.body);
