@@ -4,5 +4,5 @@ export interface IUser {
     firstName: string;
     lastName: string;
     accessGroups: string[];
-    // imageURL: string;
+    imagePublicId: string;
 }

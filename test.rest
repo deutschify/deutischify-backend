@@ -26,21 +26,28 @@ POST {{url}}/register
 content-type: application/json
  
 {
-    "firstName": "Mezekir",
-    "lastName": "Abraham",
-    "email": "dimoabr@gmail.com",
+    "firstName": "Andrea",
+    "lastName": "lopez",
+    "email": "andrea@gmail.com",
     "password": "an123",
-    "language": "English",
-    "nationality": "Eritrean",
+    "language": "Deutsch",
+    "nationality": "German",
     "safeOriginCode": "12345678",
-    "confimationCode": "12335545646"
+    "confimationCode": "",
+    "imagePublicId":"cld-sample"
 }
 
 ### GET CURRENT USER
 {{url}}/current-user
 
+### GET ALL USERS
+{{url}}/users
+
 ### GET USER ACCOUNT
-{{url}}/Andrea
+{{url}}/users/632c163b107b22583ae88005
+
+### GET USER ACCOUNT
+{{url}}/andrea
 
 ### LOGOUT GET
 {{url}}/logout
@@ -59,3 +66,11 @@ content-type: application/json
 
 ### GET state and Deutchland fragen
 {{url}}/all-questions/bremen
+
+### UPDATE A USER
+PUT {{url}}/update/632c163b107b22583ae88005
+content-type: application/json
+
+{
+    "language": "deutsch"
+}
