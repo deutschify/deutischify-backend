@@ -77,14 +77,6 @@ const transporter = createTransport({
     tls: { rejectUnauthorized: false },
 });
 
-app.use(
-    session({
-        resave: true,
-        saveUninitialized: true,
-        secret: "tempsecret",
-    })
-);
-
 app.use(cookieParser());
 
 app.use(
@@ -165,31 +157,31 @@ app.get("/rate-us", async (req: express.Request, res: express.Response) => {
     res.send("<h1> rate us </h1>");
 });
 
-app.post("/rate-us", async (req: express.Request, res: express.Response) => {
-    // const { firstName, lastName, feedback } = req.body;
-    // res.send(req.body);
-    try {
-        let user = req.session.user;
-        if (user) {
-            res.send({
-                currentUser: user,
-            });
-            const firstName = req.body.firstName;
-            const lastName = req.body.lastName;
-            const feedback = req.body.feedback;
-            user = { ...user, firstName, lastName, feedback };
-        } else {
-            logAnonymousUserIn(req, res);
-        }
+// app.post("/rate-us", async (req: express.Request, res: express.Response) => {
+//     // const { firstName, lastName, feedback } = req.body;
+//     // res.send(req.body);
+//     try {
+//         let user = req.session.user;
+//         if (user) {
+//             res.send({
+//                 currentUser: user,
+//             });
+//             const firstName = req.body.firstName;
+//             const lastName = req.body.lastName;
+//             const feedback = req.body.feedback;
+//             user = { ...user, firstName, lastName, feedback };
+//         } else {
+//             logAnonymousUserIn(req, res);
+//         }
 
-        console.log(user);
-    } catch (err) {
-        console.log(err);
-    }
-});
+//         console.log(user);
+//     } catch (err) {
+//         console.log(err);
+//     }
+// });
 
 // functions for loging in and out
-const loginSecondsMax = 10;
+const loginSecondsMax = 1000;
 
 const logAnonymousUserIn = async (
     req: express.Request,
@@ -208,7 +200,7 @@ const logAnonymousUserIn = async (
             currentUser: user,
         });
     } else {
-        res.status(500).send("bad login");
+        res.status(500).send("user is still logged in");
     }
 };
 
@@ -263,59 +255,68 @@ app.post(
     ensureSafeOrigin,
     async (req: express.Request, res: express.Response) => {
         try {
-            const firstName = req.body.firstName;
-            const lastName = req.body.lastName;
+            // Check if email is already registered
             const email = req.body.email;
-            const nationality = req.body.nationality;
-            const confirmationCode = getRandomConfirmationCode();
-            const language = req.body.language;
-            const password = req.body.password;
+            const emailInUse = await User.findOne({ email });
+            if (emailInUse) {
+                res.send({
+                    message: "Email is registered!",
+                });
+            } else {
+                const firstName = req.body.firstName;
+                const lastName = req.body.lastName;
+                const nationality = req.body.nationality;
+                const confirmationCode = getRandomConfirmationCode();
+                const language = req.body.language;
+                const password = req.body.password;
 
-            const salt = await bcrypt.genSalt();
-            const hash = await bcrypt.hash(password, salt);
+                const salt = await bcrypt.genSalt();
+                const hash = await bcrypt.hash(password, salt);
 
-            const newUser = new User({
-                firstName,
-                lastName,
-                password: hash,
-                email,
-                language,
-                nationality,
-                confirmationCode,
-                accessGroups: ["loggedInUsers", "unconfirmedMembers"],
-            });
+                const newUser = new User({
+                    firstName,
+                    lastName,
+                    password: hash,
+                    email,
+                    language,
+                    nationality,
+                    confirmationCode,
+                    imagePublicId: 'c4nct0lzjndw2u69zbyx',
+                    accessGroups: ["loggedInUsers", "unconfirmedMembers"],
+                });
 
-            newUser.save();
+                newUser.save();
 
-            // send confirmation email to user
-            const confirmUrl = `${process.env.FRONTEND_BASE_URL}/confirm-registration/${confirmationCode}`;
-            const mailOptions = {
-                from: `Deutschify Der Integrationscoach <${process.env.MAILER_ACCOUNT_NAME}@gmail.com>`,
-                to: email,
-                subject: "Please confirm your registration",
-                html: `
+                // send confirmation email to user
+                const confirmUrl = `${process.env.FRONTEND_BASE_URL}/confirm-registration/${confirmationCode}`;
+                const mailOptions = {
+                    from: `Deutschify Der Integrationscoach <${process.env.MAILER_ACCOUNT_NAME}@gmail.com>`,
+                    to: email,
+                    subject: "Please confirm your registration",
+                    html: `
 	<h1>Thank you for your registration!</h1>
 	<p>We appreciate your membership!</p>
 	<p>Please click here to confirm your registration: <a href="${confirmUrl}">${confirmUrl}</a></p>`,
-            };
-            transporter.sendMail(mailOptions, (error, info) => {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log("Email sent: " + info.response);
-                }
-            });
+                };
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log("Email sent: " + info.response);
+                    }
+                });
 
-            res.send({
-                message: "user created",
-                user: {
-                    firstName,
-                    lastName,
-                    email,
-                },
-            });
+                res.send({
+                    message: "user created",
+                    user: {
+                        firstName,
+                        lastName,
+                        email,
+                    },
+                });
+            }
         } catch (e) {
-            // res.status(500).send(e);
+            res.status(500).send(e);
         }
     }
 );
@@ -336,6 +337,18 @@ app.get(
     }
 );
 
+// app.get("/:user", async(req: express.Request, res: express.Response) => {
+//     const {user} = req.params;
+//     const currentUser = req.session.user
+//     if (user === currentUser.firstName) {
+//         res.send({
+//             "currentUser": currentUser,
+//         });
+//     }else {
+//         logAnonymousUserIn(req, res);
+//     }
+// })
+
 app.post(
     "/confirm-registration-code",
     async (req: express.Request, res: express.Response) => {
@@ -343,64 +356,90 @@ app.post(
 
         const user = await User.findOne({ confirmationCode });
         if (user) {
+            console.log("yes user is found");
+
             user.accessGroups = ["loggedInUsers", "members"];
             user.save();
             req.session.user = user;
             req.session.cookie.expires = new Date(
                 Date.now() + loginSecondsMax * 1000
             );
+            console.log("session", req.session.user);
+            console.log({ user });
+
             req.session.save();
             res.send({ userWasConfirmed: true });
         } else {
-            res.send({ userWasConfirmed: false });
+            res.send({ userWasConfirmed: false, user: "user not found" });
         }
     }
 );
 
 //Update User Info
 
-app.put("/users/:_id", async (req: express.Request, res: express.Response) => {
-    if (req.params._id === req.body._id || req.body.isAdmin) {
-        if (req.body.password) {
-            try {
-                const salt = await bcrypt.genSalt();
-                req.body.password = await bcrypt.hash(req.body.password, salt);
-            } catch (err) {
-                return res.status(500).json(err);
-            }
-        }
-        try {
-            const user = await User.findByIdAndUpdate(req.params._id, {
-                $set: req.body,
+// app.put("/users/:_id", async (req: express.Request, res: express.Response) => {
+//     if (req.params._id === req.body._id) {
+//         if (req.body.password) {
+//             try {
+//                 const salt = await bcrypt.genSalt();
+//                 req.body.password = await bcrypt.hash(req.body.password, salt);
+//             } catch (err) {
+//                 return res.status(500).json(err);
+//             }
+//         }
+//         try {
+//             const user = await User.findByIdAndUpdate(req.params._id, {
+//                 $set: req.body,
+//             });
+//             res.status(200).json("account has been updated");
+//         } catch (err) {
+//             return res.status(500).json(err);
+//         }
+//     } else {
+//         return res.status(403).json("You can't update yourself");
+//     }
+// });
+
+app.put("/update/:_id", async (req, res) => {
+    const { _id } = req.params;
+    
+    try {
+        const updatedUser = await User.findByIdAndUpdate(_id, req.body.dataToSend, {
+            useFindAndModify: false,
+            new: true
+        });       
+        
+        if (!req.body.dataToSend) {
+            res.status(404).send({
+                message: "you can not update your profile while logged out",
             });
-            res.status(200).json("account has been updated");
-        } catch (err) {
-            return res.status(500).json(err);
+        } else {
+            res.send(updatedUser);
         }
-    } else {
-        return res.status(403).json("You can't update yourself");
+    } catch (error) {
+        res.status(500).send(error || { message: "server error" });
     }
 });
 
 //delete a user
 
-app.delete(
-    "/users/:_id",
-    async (req: express.Request, res: express.Response) => {
-        if (req.params._id === req.body._id || req.body.isAdmin) {
-            try {
-                await User.findByIdAndDelete(req.params._id);
-                res.status(200).json("account has been deleted");
-            } catch (err) {
-                return res.status(500).json(err);
-            }
-        } else {
-            return res.status(403).json("You can't delete yourself");
-        }
-    }
-);
+// app.delete(
+//     "/users/:_id",
+//     async (req: express.Request, res: express.Response) => {
+//         if (req.params._id === req.body._id || req.body.isAdmin) {
+//             try {
+//                 await User.findByIdAndDelete(req.params._id);
+//                 res.status(200).json("account has been deleted");
+//             } catch (err) {
+//                 return res.status(500).json(err);
+//             }
+//         } else {
+//             return res.status(403).json("You can't delete yourself");
+//         }
+//     }
+// );
 
-//get a User
+// get a User
 app.get("/users/:_id", async (req: express.Request, res: express.Response) => {
     try {
         const user = await User.findById(req.params._id);

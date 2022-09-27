@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema(
         nationality: String,
         confirmationCode: String,
         accessGroups: [String],
+        imagePublicId: String,
     },
     // timestamps tell us when was the user created or updated
     { timestamps: true }
