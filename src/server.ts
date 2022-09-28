@@ -117,10 +117,6 @@ app.all("/", function (req, res, next) {
     next();
 });
 
-// app.get("/", (req: express.Request, res: express.Response) => {
-//     res.send(`***${process.env.NODE_ENV}***`);
-// });
-
 app.get("/users", async (req: express.Request, res: express.Response) => {
     const users = await User.find({});
     res.send(users);
@@ -337,17 +333,15 @@ app.get(
     }
 );
 
-// app.get("/:user", async(req: express.Request, res: express.Response) => {
-//     const {user} = req.params;
-//     const currentUser = req.session.user
-//     if (user === currentUser.firstName) {
-//         res.send({
-//             "currentUser": currentUser,
-//         });
-//     }else {
-//         logAnonymousUserIn(req, res);
-//     }
-// })
+//get a User
+app.get("/users/:_id", async (req: express.Request, res: express.Response) => {
+    try {
+        const user = await User.findById(req.params._id);
+        res.status(200).json(user);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
 
 app.post(
     "/confirm-registration-code",
@@ -374,31 +368,6 @@ app.post(
         }
     }
 );
-
-//Update User Info
-
-// app.put("/users/:_id", async (req: express.Request, res: express.Response) => {
-//     if (req.params._id === req.body._id) {
-//         if (req.body.password) {
-//             try {
-//                 const salt = await bcrypt.genSalt();
-//                 req.body.password = await bcrypt.hash(req.body.password, salt);
-//             } catch (err) {
-//                 return res.status(500).json(err);
-//             }
-//         }
-//         try {
-//             const user = await User.findByIdAndUpdate(req.params._id, {
-//                 $set: req.body,
-//             });
-//             res.status(200).json("account has been updated");
-//         } catch (err) {
-//             return res.status(500).json(err);
-//         }
-//     } else {
-//         return res.status(403).json("You can't update yourself");
-//     }
-// });
 
 app.put("/update/:_id", async (req, res) => {
     const { _id } = req.params;
@@ -444,80 +413,6 @@ app.put("/update/:_id", async (req, res) => {
 // );
 
 // get a User
-app.get("/users/:_id", async (req: express.Request, res: express.Response) => {
-    try {
-        const user = await User.findById(req.params._id);
-        res.status(200).json(user);
-    } catch (err) {
-        res.status(500).json(err);
-    }
-});
-
-//Post Section
-//Create a Post
-app.post("/posts", async (req: express.Request, res: express.Response) => {
-    const newPost = new Post(req.body);
-    try {
-        const savedPost = await newPost.save();
-        res.status(200).json(savedPost);
-    } catch (err) {
-        res.status(500).json(err);
-    }
-});
-
-//Update a post
-app.put("/posts/:_id", async (req: express.Request, res: express.Response) => {
-    try {
-        const post = await Post.findById(req.params._id);
-        if (post.userId === req.body.userId) {
-            await post.updateOne({ $set: req.body });
-            res.status(200).json("Post has been updated");
-        } else {
-            res.status(403).json("you can't update the post");
-        }
-    } catch (err) {
-        res.status(500).json(err);
-    }
-});
-
-//delete a post
-app.delete(
-    "/posts/:_id",
-    async (req: express.Request, res: express.Response) => {
-        try {
-            const post = await Post.findById(req.params._id);
-            if (post.userId === req.body.userId) {
-                await post.deleteOne();
-                res.status(200).json("Post has been deleted");
-            } else {
-                res.status(403).json("you can't delete the post");
-            }
-        } catch (err) {
-            res.status(500).json(err);
-        }
-    }
-);
-
-//Like and Dislike a Post
-app.put(
-    "/posts/:_id/like",
-    async (req: express.Request, res: express.Response) => {
-        try {
-            const post = await Post.findById(req.params._id);
-            if (!post.likes.includes(req.body._id)) {
-                await post.updateOne({ $push: { likes: req.body.userId } });
-                res.status(200).json("Post has been liked");
-            } else {
-                await post.updateOne({ $pull: { likes: req.body.userId } });
-                res.status(200).json("Post has been disliked");
-            }
-        } catch (err) {
-            res.status(500).json(err);
-        }
-    }
-);
-
-//get a User
 app.get("/users/:_id", async (req: express.Request, res: express.Response) => {
     try {
         const user = await User.findById(req.params._id);
