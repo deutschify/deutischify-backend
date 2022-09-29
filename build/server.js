@@ -11,17 +11,25 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import cloudinary from "cloudinary";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { createTransport } from "nodemailer";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 import { User } from "./models/User.js";
+import { Deutschland } from "./models/States.js";
 // const users = getUsers();
 dotenv.config();
-mongoose.connect(process.env.MONGODB_URI);
+mongoose.connect(process.env.MONGODB_URI).then(() => { console.log('mongoDB is connected'); }).catch((err) => { console.log(err); });
 const app = express();
 const PORT = process.env.PORT || 8000;
+// in ordder to configure the cloudinary api
+cloudinary.v2.config({
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 app.use(cors({
     origin: process.env.FRONTEND_BASE_URL,
     methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
@@ -30,7 +38,7 @@ app.use(cors({
 app.set("trust proxy", 1);
 app.use(express.json());
 const transporter = createTransport({
-    host: 'smtp.gmail.com',
+    host: "smtp.gmail.com",
     port: 465,
     secure: true,
     service: "gmail",
@@ -39,7 +47,7 @@ const transporter = createTransport({
         user: process.env.MAILER_ACCOUNT_NAME,
         pass: process.env.MAILER_ACCOUNT_PASSWORD,
     },
-    tls: { rejectUnauthorized: false }
+    tls: { rejectUnauthorized: false },
 });
 app.use(session({
     resave: true,
@@ -73,7 +81,7 @@ const ensureSafeOrigin = (req, res, next) => {
         res.status(500).send("no access");
     }
 };
-app.all('/', function (req, res, next) {
+app.all("/", function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "http://localhost:3000");
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     next();
@@ -85,10 +93,22 @@ app.get("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const users = yield User.find({});
     res.send(users);
 }));
+app.get("/all-questions", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    // const { category } = req.params;
+    const deutschland = yield Deutschland.find();
+    res.send(deutschland);
+}));
+app.get("/all-questions/:category", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { category } = req.params;
+    // const deutschland = await Deutschland.find({ category } );
+    // const deutschland = await Deutschland.find({ $and: [ { category }, { category:"deutschland" } ] })
+    const deutschland = yield Deutschland.find({ category: { $in: ["deutschland", `${category}`] } }).sort({ number: 1 }).collation({ locale: "en_US", numericOrdering: true });
+    res.send(deutschland);
+}));
 // functions for loging in and out
 const loginSecondsMax = 10;
 const logAnonymousUserIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield User.findOne({ email: 'anonymousUser' });
+    const user = yield User.findOne({ email: "anonymousUser" });
     // const user = users.find((user) => user.email === 'anonymousUser');
     if (user) {
         req.session.user = user;
@@ -172,22 +192,26 @@ app.post("/register", ensureSafeOrigin, (req, res) => __awaiter(void 0, void 0, 
                 console.log(error);
             }
             else {
-                console.log('Email sent: ' + info.response);
+                console.log("Email sent: " + info.response);
             }
         });
         res.send({
-            message: 'user created', user: {
-                firstName, lastName, email
-            }
+            message: "user created",
+            user: {
+                firstName,
+                lastName,
+                email,
+            },
         });
     }
     catch (e) {
         // res.status(500).send(e);
     }
 }));
-app.get("/current-user", (req, res) => {
-    const user = req.session.user;
+app.get("/current-user", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let user = req.session.user;
     if (user) {
+        // user = await User.findOne({ email: user.email });
         res.send({
             currentUser: user,
         });
@@ -195,12 +219,12 @@ app.get("/current-user", (req, res) => {
     else {
         logAnonymousUserIn(req, res);
     }
-});
-app.post('/confirm-registration-code', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+}));
+app.post("/confirm-registration-code", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const confirmationCode = req.body.confirmationCode;
     const user = yield User.findOne({ confirmationCode });
     if (user) {
-        user.accessGroups = ['loggedInUsers', 'members'];
+        user.accessGroups = ["loggedInUsers", "members"];
         user.save();
         req.session.user = user;
         req.session.cookie.expires = new Date(Date.now() + loginSecondsMax * 1000);
