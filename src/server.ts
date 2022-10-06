@@ -44,7 +44,7 @@ cloudinary.v2.config({
 app.use(
     cors({
         origin: process.env.FRONTEND_BASE_URL,
-        methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
+        methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD", "DELETE"],
         credentials: true,
     })
 );
@@ -455,6 +455,9 @@ app.delete(
     async (req: express.Request, res: express.Response) => {
         try {
             const post = await Post.findById(req.params._id);
+            console.log(post.userId);
+            console.log(req.body.userId);
+
             if (post.userId === req.body.userId) {
                 await post.deleteOne();
                 res.status(200).json("Post has been deleted");
@@ -473,7 +476,7 @@ app.put(
     async (req: express.Request, res: express.Response) => {
         try {
             const post = await Post.findById(req.params._id);
-            if (!post.likes.includes(req.body._id)) {
+            if (!post.likes.includes(req.body.userId)) {
                 await post.updateOne({ $push: { likes: req.body.userId } });
                 res.status(200).json("Post has been liked");
             } else {
