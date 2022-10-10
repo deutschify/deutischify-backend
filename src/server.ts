@@ -16,6 +16,7 @@ import cookieParser from "cookie-parser";
 import { User } from "./models/User.js";
 import { Deutschland } from "./models/States.js";
 import { Post } from "./models/Post.js";
+import { Comment } from "./models/Post.js";
 
 // const users = getUsers();
 
@@ -507,6 +508,32 @@ app.get(
     async (req: express.Request, res: express.Response) => {
         const posts = await Post.find({});
         res.send(posts);
+    }
+);
+
+//Comments Section
+//Create a Comment
+
+app.post(
+    "/posts/:_id/comment",
+    async (req: express.Request, res: express.Response) => {
+        const newComment = new Comment(req.body);
+        try {
+            const savedComment = await newComment.save();
+            res.status(200).json(savedComment);
+        } catch (err) {
+            res.status(500).json(err);
+        }
+
+        //-------
+        // try {
+        //     const post = await Post.findById(req.params._id);
+
+        //     await post.update({ $push: { comments: req.body.comment } });
+        //     res.status(200).json("comment has been added");
+        // } catch (err) {
+        //     res.status(500).json(err);
+        // }
     }
 );
 
