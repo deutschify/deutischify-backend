@@ -323,6 +323,7 @@ app.get(
         let user = req.session.user;
 
         if (user) {
+ 
             // user = await User.findOne({ email: user.email });
             res.send({
                 currentUser: user,
@@ -332,6 +333,25 @@ app.get(
         }
     }
 );
+
+// app.post(
+//     "/current-user",
+//     async (req: express.Request, res: express.Response) => {
+//         let user = req.session.user;
+
+//         if (user) {
+//             const answeredQuestions = req.body.answeredQuestions
+//             user.answeredQuestions = answeredQuestions
+//             user.save()
+//             // user = await User.findOne({ email: user.email });
+//             res.send({
+//                 currentUser: user,
+//             });
+//         } else {
+//             logAnonymousUserIn(req, res);
+//         }
+//     }
+// );
 
 //get a User
 app.get("/users/:_id", async (req: express.Request, res: express.Response) => {
