@@ -527,14 +527,15 @@ app.get(
 //     }
 // );
 
-app.put(
+app.post(
     "/posts/:_id/comment",
     async (req: express.Request, res: express.Response) => {
         const newComment = new Comment(req.body);
         try {
+            const savedComment = await newComment.save();
             const post = await Post.findById(req.params._id);
 
-            await post.updateOne({ $push: { comments: newComment } });
+            await post.updateOne({ $push: { comments: savedComment } });
             res.status(200).json("Comment has been added");
         } catch (err) {
             res.status(500).json(err);
@@ -550,6 +551,53 @@ app.get(
         try {
             const post = await Post.findById(req.params._id);
             res.status(200).json(post.comments);
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    }
+);
+
+//Get the comment Owner by passing the userId as a params
+app.get(
+    "/posts/comment-owner/:_id",
+    async (req: express.Request, res: express.Response) => {
+        try {
+            const user = await User.findById(req.params._id);
+            console.log(user);
+
+            res.status(200).json(user);
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    }
+);
+
+//Delete a comment
+
+app.delete(
+    "/posts/comments/comment/:_id",
+    async (req: express.Request, res: express.Response) => {
+        console.log("111");
+
+        try {
+            console.log("222");
+
+            const comment = await Comment.findById(req.params._id);
+            console.log("333");
+
+            console.log(comment._id);
+            //console.log(comment.UserId);
+
+            //console.log(comment.comments);
+
+            // console.log(comment.comments.userId, "userId");
+
+            if (comment.userId === req.body.userId) {
+                await comment.deleteOne();
+                res.status(200).json("Comment has been deleted");
+            } else {
+                res.status(403).json("you can't delete the comment");
+            }
         } catch (err) {
             res.status(500).json(err);
         }
