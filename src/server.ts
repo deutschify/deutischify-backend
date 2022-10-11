@@ -514,26 +514,45 @@ app.get(
 //Comments Section
 //Create a Comment
 
-app.post(
+// app.post(
+//     "/posts/:_id/comment",
+//     async (req: express.Request, res: express.Response) => {
+//         const newComment = new Comment(req.body);
+//         try {
+//             const savedComment = await newComment.save();
+//             res.status(200).json(savedComment);
+//         } catch (err) {
+//             res.status(500).json(err);
+//         }
+//     }
+// );
+
+app.put(
     "/posts/:_id/comment",
     async (req: express.Request, res: express.Response) => {
         const newComment = new Comment(req.body);
         try {
-            const savedComment = await newComment.save();
-            res.status(200).json(savedComment);
+            const post = await Post.findById(req.params._id);
+
+            await post.updateOne({ $push: { comments: newComment } });
+            res.status(200).json("Comment has been added");
         } catch (err) {
             res.status(500).json(err);
         }
+    }
+);
 
-        //-------
-        // try {
-        //     const post = await Post.findById(req.params._id);
+// get all comments for a specific post
 
-        //     await post.update({ $push: { comments: req.body.comment } });
-        //     res.status(200).json("comment has been added");
-        // } catch (err) {
-        //     res.status(500).json(err);
-        // }
+app.get(
+    "/posts/comments/:_id",
+    async (req: express.Request, res: express.Response) => {
+        try {
+            const post = await Post.findById(req.params._id);
+            res.status(200).json(post.comments);
+        } catch (err) {
+            res.status(500).json(err);
+        }
     }
 );
 
