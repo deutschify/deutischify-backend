@@ -577,23 +577,41 @@ app.get(
 app.delete(
     "/posts/comments/comment/:_id",
     async (req: express.Request, res: express.Response) => {
-        console.log("111");
-
         try {
+            const commentID = await Comment.findById(req.params._id);
+            console.log("111");
+            // console.log(commentID._id, "comment");
+            const deletedId = commentID._id;
+            console.log(deletedId, "the required Id");
+
             console.log("222");
 
-            const comment = await Comment.findById(req.params._id);
+            const deletedComment = await Post.findOne({
+                "comments._id": deletedId,
+            });
             console.log("333");
 
-            console.log(comment._id);
-            //console.log(comment.UserId);
+            console.log(deletedComment.comments, "9999");
+            const requiredCommentID = deletedComment.comments.find((ri) => {
+                if (ri._id === deletedId) {
+                    return console.log(ri._id);
+                }
+            });
 
-            //console.log(comment.comments);
+            console.log(requiredCommentID, "the required One");
 
-            // console.log(comment.comments.userId, "userId");
+            console.log("333");
 
-            if (comment.userId === req.body.userId) {
-                await comment.deleteOne();
+            console.log(deletedComment, "deleted comment");
+            console.log("444");
+
+            if (deletedComment.userId === req.body.userId) {
+                // await deletedComment.deleteOne();
+                await deletedComment.updateOne({
+                    $pull: { comments: deletedId },
+                });
+                //await deletedComment.deleteOne();
+
                 res.status(200).json("Comment has been deleted");
             } else {
                 res.status(403).json("you can't delete the comment");
