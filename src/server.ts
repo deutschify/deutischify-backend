@@ -530,12 +530,12 @@ app.get(
 app.post(
     "/posts/:_id/comment",
     async (req: express.Request, res: express.Response) => {
-        const newComment = new Comment(req.body);
+        // const newComment = new Comment(req.body);
         try {
-            const savedComment = await newComment.save();
+            // const savedComment = await newComment.save();
             const post = await Post.findById(req.params._id);
 
-            await post.updateOne({ $push: { comments: savedComment } });
+            await post.updateOne({ $push: { comments: req.body } });
             res.status(200).json("Comment has been added");
         } catch (err) {
             res.status(500).json(err);
@@ -578,43 +578,71 @@ app.delete(
     "/posts/comments/comment/:_id",
     async (req: express.Request, res: express.Response) => {
         try {
-            const commentID = await Comment.findById(req.params._id);
-            console.log("111");
-            // console.log(commentID._id, "comment");
-            const deletedId = commentID._id;
-            console.log(deletedId, "the required Id");
-
-            console.log("222");
-
-            const deletedComment = await Post.findOne({
-                "comments._id": deletedId,
+            // const requiredComment = await Comment.findById(req.params._id);
+            // console.log("111");
+            // console.log(requiredComment, "requiredComment");
+            // const requiredCommentId = requiredComment._id.toString();
+            // console.log(requiredCommentId, "requiredCommentId");
+            // console.log("------");
+            // COMMENT 5 WITHOUT COMMENT SCHEMA
+            const requiredPost = await Post.findOne({
+                "comments._id": req.params._id,
             });
-            console.log("333");
 
-            console.log(deletedComment.comments, "9999");
-            const requiredCommentID = deletedComment.comments.find((ri) => {
-                if (ri._id === deletedId) {
-                    return console.log(ri._id);
+            console.log(requiredPost, "requiredPost");
+
+            // console.log(requiredComment);
+            // const requiredPost = await Post.findOne({
+            //     "comments._id": requiredCommentId,
+            // });
+            // console.log(requiredPost, "requiredPost");
+            const deletedComment = requiredPost.comments.filter((c) => {
+                if (c._id.toString() === req.params._id) {
+                    return c._id;
                 }
             });
-
-            console.log(requiredCommentID, "the required One");
-
-            console.log("333");
-
-            console.log(deletedComment, "deleted comment");
-            console.log("444");
-
-            if (deletedComment.userId === req.body.userId) {
-                // await deletedComment.deleteOne();
-                await deletedComment.updateOne({
-                    $pull: { comments: deletedId },
+            console.log(deletedComment, "deletedComment");
+            const deletedCommentOwner = deletedComment.map((c) => {
+                return c.userId;
+            });
+            console.log(deletedCommentOwner, "deletedCommentOwner");
+            if (deletedCommentOwner.toString() === req.body.userId) {
+                console.log("111");
+                console.log("222");
+                await requiredPost.updateOne({
+                    $pull: {
+                        comments: {
+                            _id: req.params._id,
+                        },
+                    },
                 });
-                //await deletedComment.deleteOne();
-
+                console.log("333");
                 res.status(200).json("Comment has been deleted");
             } else {
                 res.status(403).json("you can't delete the comment");
+            }
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    }
+);
+
+//Update a comment
+
+app.put(
+    "/posts/comments/comment/:_id",
+    async (req: express.Request, res: express.Response) => {
+        try {
+            const requiredComment = await Comment.findById(req.params._id);
+            console.log(requiredComment);
+
+            if (requiredComment.userId === req.body.userId) {
+                await requiredComment.updateOne({
+                    $set: { comment: req.body },
+                });
+                res.status(200).json("comment has been updated");
+            } else {
+                res.status(403).json("you can't update the comment");
             }
         } catch (err) {
             res.status(500).json(err);
