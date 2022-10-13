@@ -16,6 +16,7 @@ import cookieParser from "cookie-parser";
 import { User } from "./models/User.js";
 import { Deutschland } from "./models/States.js";
 import { Post } from "./models/Post.js";
+import { Comment } from "./models/Post.js";
 
 // const users = getUsers();
 
@@ -507,6 +508,117 @@ app.get(
     async (req: express.Request, res: express.Response) => {
         const posts = await Post.find({});
         res.send(posts);
+    }
+);
+
+//Comments Section
+//Create a Comment
+
+// app.post(
+//     "/posts/:_id/comment",
+//     async (req: express.Request, res: express.Response) => {
+//         const newComment = new Comment(req.body);
+//         try {
+//             const savedComment = await newComment.save();
+//             res.status(200).json(savedComment);
+//         } catch (err) {
+//             res.status(500).json(err);
+//         }
+//     }
+// );
+
+app.post(
+    "/posts/:_id/comment",
+    async (req: express.Request, res: express.Response) => {
+        const newComment = new Comment(req.body);
+        try {
+            const savedComment = await newComment.save();
+            const post = await Post.findById(req.params._id);
+
+            await post.updateOne({ $push: { comments: savedComment } });
+            res.status(200).json("Comment has been added");
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    }
+);
+
+// get all comments for a specific post
+
+app.get(
+    "/posts/comments/:_id",
+    async (req: express.Request, res: express.Response) => {
+        try {
+            const post = await Post.findById(req.params._id);
+            res.status(200).json(post.comments);
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    }
+);
+
+//Get the comment Owner by passing the userId as a params
+app.get(
+    "/posts/comment-owner/:_id",
+    async (req: express.Request, res: express.Response) => {
+        try {
+            const user = await User.findById(req.params._id);
+            console.log(user);
+
+            res.status(200).json(user);
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    }
+);
+
+//Delete a comment
+
+app.delete(
+    "/posts/comments/comment/:_id",
+    async (req: express.Request, res: express.Response) => {
+        try {
+            const commentID = await Comment.findById(req.params._id);
+            console.log("111");
+            // console.log(commentID._id, "comment");
+            const deletedId = commentID._id;
+            console.log(deletedId, "the required Id");
+
+            console.log("222");
+
+            const deletedComment = await Post.findOne({
+                "comments._id": deletedId,
+            });
+            console.log("333");
+
+            console.log(deletedComment.comments, "9999");
+            const requiredCommentID = deletedComment.comments.find((ri) => {
+                if (ri._id === deletedId) {
+                    return console.log(ri._id);
+                }
+            });
+
+            console.log(requiredCommentID, "the required One");
+
+            console.log("333");
+
+            console.log(deletedComment, "deleted comment");
+            console.log("444");
+
+            if (deletedComment.userId === req.body.userId) {
+                // await deletedComment.deleteOne();
+                await deletedComment.updateOne({
+                    $pull: { comments: deletedId },
+                });
+                //await deletedComment.deleteOne();
+
+                res.status(200).json("Comment has been deleted");
+            } else {
+                res.status(403).json("you can't delete the comment");
+            }
+        } catch (err) {
+            res.status(500).json(err);
+        }
     }
 );
 

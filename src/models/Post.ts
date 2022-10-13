@@ -1,9 +1,12 @@
 import mongoose from "mongoose";
 
-const commentSchema = new mongoose.Schema({
-    userId: { type: String, required: true },
-    comment: { type: String, required: true },
-});
+const CommentSchema = new mongoose.Schema(
+    {
+        userId: { type: String, required: true },
+        comment: { type: String, required: true },
+    },
+    { timestamps: true }
+);
 
 const PostSchema = new mongoose.Schema(
     {
@@ -12,9 +15,10 @@ const PostSchema = new mongoose.Schema(
         userId: { type: String, required: true },
 
         likes: { type: Array, default: [] },
-        comments: { type: [commentSchema] },
+        comments: { type: [CommentSchema] },
     },
     { timestamps: true }
 );
 
 export const Post = mongoose.model("Post", PostSchema);
+export const Comment = mongoose.model("Comment", CommentSchema);
