@@ -602,6 +602,7 @@ app.delete(
                 }
             });
             console.log(deletedComment, "deletedComment");
+
             const deletedCommentOwner = deletedComment.map((c) => {
                 return c.userId;
             });
@@ -630,16 +631,39 @@ app.delete(
 //Update a comment
 
 app.put(
-    "/posts/comments/comment/:_id",
+    "/posts/:postId/comments/comment/:commentId",
     async (req: express.Request, res: express.Response) => {
         try {
-            const requiredComment = await Comment.findById(req.params._id);
-            console.log(requiredComment);
+            const requiredPost = await Post.findById(req.params.postId);
+            console.log(requiredPost, "requiredPost");
 
-            if (requiredComment.userId === req.body.userId) {
-                await requiredComment.updateOne({
-                    $set: { comment: req.body },
-                });
+            // const requiredComment = requiredPost.comments.filter((c) => {
+            //     if (c._id.toString() === req.params._id) {
+            //         return c._id;
+            //     }
+            // });
+            // console.log(requiredComment, "requiredComment");
+
+            const comment = requiredPost.comments.id(req.params.commentId);
+
+            // const requiredCommentOwner = requiredComment.map((c) => {
+            //     return c.userId;
+            // });
+            // console.log(requiredCommentOwner, "requiredCommentOwner");
+
+            if (comment.userId.toString() === req.body.userId) {
+                console.log("111");
+                console.log(req.body);
+
+                // await requiredPost.update({
+                //     $set: {
+                //         "comments.comment": req.body,
+                //     },
+                // });
+                comment.set(req.body);
+                await requiredPost.save();
+                console.log("222");
+
                 res.status(200).json("comment has been updated");
             } else {
                 res.status(403).json("you can't update the comment");
