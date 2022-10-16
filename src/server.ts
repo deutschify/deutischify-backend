@@ -674,6 +674,27 @@ app.put(
     }
 );
 
+// Get all my Posts
+app.get(
+    "/posts/my-posts/:userId",
+    async (req: express.Request, res: express.Response) => {
+        try {
+            const user = await User.findById(req.params.userId);
+            //console.log(user._id);
+
+            const post = await Post.find({
+                userId: req.params.userId,
+            });
+
+            //console.log(post);
+
+            res.status(200).json(post);
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    }
+);
+
 app.get("/logout", (req: express.Request, res: express.Response) => {
     logAnonymousUserIn(req, res);
 });
