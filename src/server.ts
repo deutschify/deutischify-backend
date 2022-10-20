@@ -637,29 +637,12 @@ app.put(
             const requiredPost = await Post.findById(req.params.postId);
             console.log(requiredPost, "requiredPost");
 
-            // const requiredComment = requiredPost.comments.filter((c) => {
-            //     if (c._id.toString() === req.params._id) {
-            //         return c._id;
-            //     }
-            // });
-            // console.log(requiredComment, "requiredComment");
-
             const comment = requiredPost.comments.id(req.params.commentId);
-
-            // const requiredCommentOwner = requiredComment.map((c) => {
-            //     return c.userId;
-            // });
-            // console.log(requiredCommentOwner, "requiredCommentOwner");
 
             if (comment.userId.toString() === req.body.userId) {
                 console.log("111");
                 console.log(req.body);
 
-                // await requiredPost.update({
-                //     $set: {
-                //         "comments.comment": req.body,
-                //     },
-                // });
                 comment.set(req.body);
                 await requiredPost.save();
                 console.log("222");
