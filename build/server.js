@@ -554,6 +554,21 @@ app.put("/posts/:postId/comments/comment/:commentId", (req, res) => __awaiter(vo
         res.status(500).json(err);
     }
 }));
+// Get all my Posts
+app.get("/posts/my-posts/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield User.findById(req.params.userId);
+        //console.log(user._id);
+        const post = yield Post.find({
+            userId: req.params.userId,
+        });
+        //console.log(post);
+        res.status(200).json(post);
+    }
+    catch (err) {
+        res.status(500).json(err);
+    }
+}));
 app.get("/logout", (req, res) => {
     logAnonymousUserIn(req, res);
 });
