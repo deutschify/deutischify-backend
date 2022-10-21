@@ -178,7 +178,7 @@ app.post("/rate-us", async (req: express.Request, res: express.Response) => {
 });
 
 // functions for loging in and out
-const loginSecondsMax = 1000;
+const loginSecondsMax = 9000;
 
 const logAnonymousUserIn = async (
     req: express.Request,
