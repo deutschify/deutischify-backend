@@ -144,7 +144,7 @@ app.post("/rate-us", (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 }));
 // functions for loging in and out
-const loginSecondsMax = 1000;
+const loginSecondsMax = 9000;
 const logAnonymousUserIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield User.findOne({ email: "anonymousUser" });
     // const user = users.find((user) => user.email === 'anonymousUser');
@@ -522,25 +522,10 @@ app.put("/posts/:postId/comments/comment/:commentId", (req, res) => __awaiter(vo
     try {
         const requiredPost = yield Post.findById(req.params.postId);
         console.log(requiredPost, "requiredPost");
-        // const requiredComment = requiredPost.comments.filter((c) => {
-        //     if (c._id.toString() === req.params._id) {
-        //         return c._id;
-        //     }
-        // });
-        // console.log(requiredComment, "requiredComment");
         const comment = requiredPost.comments.id(req.params.commentId);
-        // const requiredCommentOwner = requiredComment.map((c) => {
-        //     return c.userId;
-        // });
-        // console.log(requiredCommentOwner, "requiredCommentOwner");
         if (comment.userId.toString() === req.body.userId) {
             console.log("111");
             console.log(req.body);
-            // await requiredPost.update({
-            //     $set: {
-            //         "comments.comment": req.body,
-            //     },
-            // });
             comment.set(req.body);
             yield requiredPost.save();
             console.log("222");
